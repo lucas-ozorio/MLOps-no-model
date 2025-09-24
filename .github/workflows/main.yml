@@ -1,4 +1,4 @@
-name: Build and package RoBERTa-sequencing to Dockerhub
+name: Build and Push Docker Image
 
 on:
   push:
@@ -6,60 +6,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+    # This permissions block is required to push to ghcr.io
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Authenticate with Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Set auto-install of extensions
-        run: az config set extension.use_dynamic_install=yes_without_prompt
-
-      - name: Attach workspace
-        run: az configure --defaults workspace="MLOps" group="lucasfabricio02-rg"
-
-      - name: Retrieve the model
-        run:  az ml model download --name "roberta-sequence" --version 1 --download-path "." --workspace-name "MLOps" --resource-group "lucasfabricio02-rg"
-
-      - name: Build flask-app container
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ./Dockerfile
-          push: false
-          tags: alfredodeza/flask-roberta:latest
-          
-      - name: Log out from Docker Hub
-        run: docker logout
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Authenticate to Docker hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-         registry: ghcr.io
-         username: ${{ github.repository_owner }}
-         password: ${{ secrets.GH_REGISTRY }}
-         
-      - name: build flask-app and push to registry
-        uses: docker/build-push-action@v2
-        with:
-         context: ./
-         tags: ghcr.io/alfredodeza/flask-roberta:latest
-         push: true
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Authenticate with Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Download model from Azure ML
+        run: az ml model download --name "roberta-sequence" --version 1 --download-path "." --workspace-name "MLOps" --resource-group "lucasfabricio02-rg"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            alfredodeza/flask-roberta:latest
+            ghcr.io/${{ github.repository_owner }}/flask-roberta:latest
