@@ -32,3 +32,9 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: alfredodeza/flask-roberta:latest
+      - name: Authenticate to Docker hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
