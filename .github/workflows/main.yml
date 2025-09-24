@@ -45,5 +45,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            alfredodeza/flask-roberta:latest
+            lucas-ozorio/flask-roberta:latest
             ghcr.io/${{ github.repository_owner }}/flask-roberta:latest
