@@ -20,10 +20,10 @@ jobs:
         run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: Attach workspace
-        run: az configure --defaults workspace="ml-ws" group="practical-mlops"
+        run: az configure --defaults workspace="MLOps" group="lucasfabricio02-rg"
 
       - name: Retrieve the model
-        run:  az ml model download --name "robertasequence" --version 1 --download-path "." --workspace-name "ml-ws" --resource-group "pratical-mlops"
+        run:  az ml model download --name "roberta-sequence" --version 1 --download-path "." --workspace-name "MLOps" --resource-group "lucasfabricio02-rg"
 
       - name: Build flask-app container
         uses: docker/build-push-action@v2
