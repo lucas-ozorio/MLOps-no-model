@@ -20,7 +20,9 @@ jobs:
         run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: Attach workspace
-        run: az extension add -n ml && az ml folder attach -w "ml-ws" -g "practical-mlops"
+        run: az ml job create --file ./path/to/your/job.yml \
+                     --workspace-name "ml-ws" \
+                     --resource-group "practical-mlops"
 
       - name: Retrieve the model
         run:  az ml model download -t "." --model-id "robertasequence:1"
