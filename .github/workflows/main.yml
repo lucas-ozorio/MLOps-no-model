@@ -23,7 +23,7 @@ jobs:
         run: az ml folder attach -w "ml-ws" -g "practical-mlops"
 
       - name: Retrieve the model
-        run: az ml model download -t "." --model-id "robertasequence:1"
+        run: az extension add -n ml && az ml model download -t "." --model-id "robertasequence:1"
 
       - name: Build flask-app container
         uses: docker/build-push-action@v2
