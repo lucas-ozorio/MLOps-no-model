@@ -20,7 +20,7 @@ jobs:
         run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: Attach workspace
-        run: az extension add -n ml && az ml configure --set defaults.workspace="ml-ws" defaults.group="practical-mlops"
+        run: az configure --defaults workspace="ml-ws" group="practical-mlops"
 
       - name: Retrieve the model
         run:  az ml model download -t "." --model-id "robertasequence:1"
