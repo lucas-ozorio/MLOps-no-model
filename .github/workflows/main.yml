@@ -23,7 +23,7 @@ jobs:
         run: az configure --defaults workspace="ml-ws" group="practical-mlops"
 
       - name: Retrieve the model
-        run:  az ml model download --name "robertasequence" --version 1 --download-path "." --workspace-name "MLOps" --resource-group "lucasfabricio02-rg"
+        run:  az ml model download --name "robertasequence" --version 1 --download-path "." --workspace-name "ml-ws" --resource-group "pratical-mlops"
 
       - name: Build flask-app container
         uses: docker/build-push-action@v2
